@@ -87,4 +87,9 @@ class User implements UserInterface
     public function eraseCredentials()
     {
     }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
 }
