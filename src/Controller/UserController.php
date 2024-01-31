@@ -19,7 +19,6 @@ class UserController extends AbstractController
         return $this->render('user/list.html.twig', ['users' => $userRepository->findAll()]);
     }
 
-
     #[Route(path: "/users/create", name: "user_create")]
     public function createAction(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher)
     {
@@ -43,20 +42,18 @@ class UserController extends AbstractController
         return $this->render('user/create.html.twig', ['form' => $form->createView()]);
     }
 
-    /**
-     * @Route("/users/{id}/edit", name="user_edit")
-     */
-    public function editAction(User $user, Request $request)
+    #[Route(path: "/users/{id}/edit", name: "user_edit")]
+    public function editAction(User $user, Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em)
     {
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
+        if ($form->isSubmitted() && $form->isValid()) {
+            $password = $hasher->hashPassword($user, $user->getPassword());
             $user->setPassword($password);
 
-            $this->getDoctrine()->getManager()->flush();
+            $em->flush();
 
             $this->addFlash('success', "L'utilisateur a bien été modifié");
 
