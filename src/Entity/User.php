@@ -2,42 +2,38 @@
 
 namespace App\Entity;
 
+use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
-/**
- * @ORM\Table("user")
- * @ORM\Entity
- * @UniqueEntity("email")
- */
-class User implements UserInterface
+#[UniqueEntity(
+    fields: ["email"],
+)]
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="string", length=25, unique=true)
-     * @Assert\NotBlank(message="Vous devez saisir un nom d'utilisateur.")
-     */
-    private $username;
+    #[ORM\Column(length: 25, unique: true)]
+    #[Assert\NotBlank(message: "Vous devez saisir un nom d'utilisateur.")]
+    private ?string $username = null;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
-    private $password;
+    #[ORM\Column(length: 64)]
+    private ?string $password= null;
 
-    /**
-     * @ORM\Column(type="string", length=60, unique=true)
-     * @Assert\NotBlank(message="Vous devez saisir une adresse email.")
-     * @Assert\Email(message="Le format de l'adresse n'est pas correcte.")
-     */
-    private $email;
+    #[ORM\Column(length: 60, unique: true)]
+    #[Assert\NotBlank(message: "Vous devez saisir une adresse email.")]
+    #[Assert\Email(message: "Le format de l'adresse n'est pas correcte.")]
+    private ?string $email = null;
+
+    #[ORM\Column()]
+    private array $roles = [];
 
     public function getId()
     {
@@ -59,7 +55,7 @@ class User implements UserInterface
         return null;
     }
 
-    public function getPassword()
+    public function getPassword():string
     {
         return $this->password;
     }
@@ -79,9 +75,13 @@ class User implements UserInterface
         $this->email = $email;
     }
 
-    public function getRoles()
+    public function getRoles(): array
     {
-        return array('ROLE_USER');
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
     }
 
     public function eraseCredentials()
