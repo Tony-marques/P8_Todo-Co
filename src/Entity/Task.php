@@ -21,6 +21,7 @@ class Task
     #[Assert\NotBlank(message: "Vous devez saisir un titre.")]
     private ?string $title = null;
 
+    #[ORM\Column(length: 255, unique: true)]
     #[Assert\NotBlank(message:"Vous devez saisir du contenu.")]
     private ?string $content = null;
 

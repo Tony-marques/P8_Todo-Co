@@ -38,28 +38,26 @@ class TaskController extends AbstractController
         return $this->render('task/create.html.twig', ['form' => $form->createView()]);
     }
 
-    // /**
-    //  * @Route("/tasks/{id}/edit", name="task_edit")
-    //  */
-    // public function editAction(Task $task, Request $request, EntityManagerInterface $em)
-    // {
-    //     $form = $this->createForm(TaskType::class, $task);
+    #[Route(path: "/tasks/{id}/edit", name: "task_edit")]
+    public function editAction(Task $task, Request $request, EntityManagerInterface $em)
+    {
+        $form = $this->createForm(TaskType::class, $task);
 
-    //     $form->handleRequest($request);
+        $form->handleRequest($request);
 
-    //     if ($form->isValid()) {
-    //         $em->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em->flush();
 
-    //         $this->addFlash('success', 'La tâche a bien été modifiée.');
+            $this->addFlash('success', 'La tâche a bien été modifiée.');
 
-    //         return $this->redirectToRoute('task_list');
-    //     }
+            return $this->redirectToRoute('task_list');
+        }
 
-    //     return $this->render('task/edit.html.twig', [
-    //         'form' => $form->createView(),
-    //         'task' => $task,
-    //     ]);
-    // }
+        return $this->render('task/edit.html.twig', [
+            'form' => $form->createView(),
+            'task' => $task,
+        ]);
+    }
 
     // /**
     //  * @Route("/tasks/{id}/toggle", name="task_toggle")
