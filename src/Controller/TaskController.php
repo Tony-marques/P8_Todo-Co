@@ -59,18 +59,16 @@ class TaskController extends AbstractController
         ]);
     }
 
-    // /**
-    //  * @Route("/tasks/{id}/toggle", name="task_toggle")
-    //  */
-    // public function toggleTaskAction(Task $task, EntityManagerInterface $em)
-    // {
-    //     $task->toggle(!$task->isDone());
-    //     $em->flush();
+    #[Route(path: "/tasks/{id}/toggle", name: "task_toggle")]
+    public function toggleTaskAction(Task $task, EntityManagerInterface $em)
+    {
+        $task->toggle(!$task->isDone());
+        $em->flush();
 
-    //     $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
+        $this->addFlash('success', sprintf('La tâche %s a bien été marquée comme faite.', $task->getTitle()));
 
-    //     return $this->redirectToRoute('task_list');
-    // }
+        return $this->redirectToRoute('task_list');
+    }
 
     // /**
     //  * @Route("/tasks/{id}/delete", name="task_delete")
