@@ -1,48 +1,35 @@
 <?php
 
-namespace AppBundle\Entity;
+namespace App\Entity;
 
+use App\Repository\TaskRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table
- */
+#[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $createdAt = null;
 
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank(message="Vous devez saisir un titre.")
-     */
-    private $title;
+    #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotBlank(message: "Vous devez saisir un titre.")]
+    private ?string $title = null;
 
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank(message="Vous devez saisir du contenu.")
-     */
-    private $content;
+    #[Assert\NotBlank(message:"Vous devez saisir du contenu.")]
+    private ?string $content = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isDone;
+    #[ORM\Column()]
+    private ?bool $isDone = null;
 
     public function __construct()
     {
-        $this->createdAt = new \Datetime();
+        $this->createdAt = new \DateTimeImmutable();
         $this->isDone = false;
     }
 
