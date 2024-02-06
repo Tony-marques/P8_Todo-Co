@@ -23,7 +23,7 @@ class TaskController extends AbstractController
     public function createAction(Request $request, EntityManagerInterface $em, Security $security)
     {
         $task = new Task();
-        $form = $this->createForm(TaskType::class, $task, ["validations_groups" => ["user:create"]]);
+        $form = $this->createForm(TaskType::class, $task, ["validation_groups" => ["user:create"]]);
 
         $form->handleRequest($request);
 
@@ -43,7 +43,7 @@ class TaskController extends AbstractController
     #[Route(path: "/tasks/{id}/edit", name: "task_edit")]
     public function editAction(Task $task, Request $request, EntityManagerInterface $em)
     {
-        $form = $this->createForm(TaskType::class, $task, ["validations_groups" => ["user:create"]]);
+        $form = $this->createForm(TaskType::class, $task, ["validation_groups" => ["user:create"]]);
 
         $form->handleRequest($request);
 
@@ -75,6 +75,8 @@ class TaskController extends AbstractController
     #[Route(path: "/tasks/{id}/delete", name: "task_delete")]
     public function deleteTaskAction(Task $task, EntityManagerInterface $em)
     {
+        $this->denyAccessUnlessGranted("TASK_DELETE", $task);
+        
         $em->remove($task);
         $em->flush();
 
