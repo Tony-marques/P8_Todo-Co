@@ -24,15 +24,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 25, unique: true)]
-    #[Assert\NotBlank(message: "Vous devez saisir un nom d'utilisateur.")]
+    #[Assert\NotBlank(message: "Vous devez saisir un nom d'utilisateur.", groups: ["user:create", "user:edit"])]
     private ?string $username = null;
 
     #[ORM\Column(length: 64)]
     private ?string $password= null;
 
     #[ORM\Column(length: 60, unique: true)]
-    #[Assert\NotBlank(message: "Vous devez saisir une adresse email.")]
-    #[Assert\Email(message: "Le format de l'adresse n'est pas correcte.")]
+    #[Assert\NotBlank(message: "Vous devez saisir une adresse email.", groups: ["user:create", "user:edit"])]
+    #[Assert\Email(message: "Le format de l'adresse n'est pas correcte.", groups: ["user:create", "user:edit"])]
     private ?string $email = null;
 
     #[ORM\Column()]
@@ -93,6 +93,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
     }
 
     public function eraseCredentials()
