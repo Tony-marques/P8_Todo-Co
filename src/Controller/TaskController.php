@@ -7,6 +7,7 @@ use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -19,7 +20,7 @@ class TaskController extends AbstractController
     }
 
     #[Route(path: "/tasks/create", name: "task_create")]
-    public function createAction(Request $request, EntityManagerInterface $em)
+    public function createAction(Request $request, EntityManagerInterface $em, Security $security)
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task);
@@ -27,6 +28,7 @@ class TaskController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $task->setUser($security->getUser());
             $em->persist($task);
             $em->flush();
 
