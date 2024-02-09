@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240206124821 extends AbstractMigration
+final class Version20240209113741 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,16 +20,14 @@ final class Version20240206124821 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('ALTER TABLE task ADD user_id INT NOT NULL');
+        $this->addSql('CREATE TABLE task (id INT AUTO_INCREMENT NOT NULL, user_id INT NOT NULL, created_at DATETIME DEFAULT NULL COMMENT \'(DC2Type:datetime_immutable)\', title VARCHAR(255) NOT NULL, content VARCHAR(255) NOT NULL, is_done TINYINT(1) NOT NULL, UNIQUE INDEX UNIQ_527EDB252B36786B (title), UNIQUE INDEX UNIQ_527EDB25FEC530A9 (content), INDEX IDX_527EDB25A76ED395 (user_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE task ADD CONSTRAINT FK_527EDB25A76ED395 FOREIGN KEY (user_id) REFERENCES user (id)');
-        $this->addSql('CREATE INDEX IDX_527EDB25A76ED395 ON task (user_id)');
     }
 
     public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE task DROP FOREIGN KEY FK_527EDB25A76ED395');
-        $this->addSql('DROP INDEX IDX_527EDB25A76ED395 ON task');
-        $this->addSql('ALTER TABLE task DROP user_id');
+        $this->addSql('DROP TABLE task');
     }
 }
