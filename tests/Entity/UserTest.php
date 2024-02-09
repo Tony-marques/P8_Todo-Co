@@ -38,5 +38,4 @@ class UserTest extends KernelTestCase
         $this->assertSame("tony.marques@live.fr", $user->getUserIdentifier());
         $this->assertSame($task, $user->getTasks()[0]);
     }
-
 }

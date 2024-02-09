@@ -90,6 +90,7 @@ class Task
     public function toggle($flag)
     {
         $this->isDone = $flag;
+        return $this;
     }
 
     public function getUser(): ?User
