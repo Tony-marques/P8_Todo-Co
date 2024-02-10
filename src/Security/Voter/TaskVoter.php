@@ -29,7 +29,7 @@ class TaskVoter extends Voter
         // ... (check conditions and return true to grant permission) ...
         switch ($attribute) {
             case self::DELETE:
-                if($subject->getUser()->getUsername() === "anonyme" && \in_array("ROLE_ADMIN", $user->getRoles())) {
+                if($subject->getUser() === null && \in_array("ROLE_ADMIN", $user->getRoles())) {
                     return true;
                     break;
                 }
