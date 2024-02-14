@@ -12,7 +12,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted("ROLE_ADMIN")]
+// #[IsGranted("ROLE_ADMIN")]
 class UserController extends AbstractController
 {
     #[Route(path: "/users", name: "user_list")]
@@ -32,6 +32,8 @@ class UserController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $password = $hasher->hashPassword($user, $user->getPassword());
             $user->setPassword($password);
+
+            dd($user);
 
             $em->persist($user);
             $em->flush();
