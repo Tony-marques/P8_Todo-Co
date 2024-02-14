@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class TaskControllerTest extends WebTestCase
 {
@@ -49,15 +50,35 @@ class TaskControllerTest extends WebTestCase
 
         $client->followRedirect();
         $this->assertSelectorTextContains('div.alert-success', "Superbe ! La tâche a été bien été ajoutée.");
+                
+    }
+    public function testEditTask(){
+        $client = $this->createClient();
+
+        $container = static::getContainer();
         
+        $entityManager = $container->get(EntityManagerInterface::class);
 
-        // $container = static::getContainer();
+        /** @var TaskRepository */
+        $taskRepository = $entityManager->getRepository(Task::class);
 
-        // /** @var TaskRepository */
-        // $taskRepository = $container->get(TaskRepository::class);
-        // $taskCreated = $taskRepository->findOneByTitle('nouveau titre 2');
+        $task = $taskRepository->findOneBy(["id" => 1]);
 
-        // $this->assertSame('nouveau titre 2',$taskCreated->getTitle());
+        /** @var UrlGeneratorInterface */
+        $urlGenerator = $container->get(UrlGeneratorInterface::class);
         
+        $crawler = $client->request(Request::METHOD_GET, $urlGenerator->generate("task_edit", ["id" => $task->getId()]));
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->selectButton('Modifier')->form([
+            'task[title]' => 'Titre modifié',
+            'task[content]' => 'contenu modifié'
+        ]);
+
+        $client->submit($form);
+
+        $client->followRedirect();
+        $this->assertSelectorTextContains('div.alert-success', "Superbe ! La tâche a bien été modifiée.");
+                
     }
 }
