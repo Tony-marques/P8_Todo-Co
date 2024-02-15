@@ -68,8 +68,33 @@ class UserControllerTest extends WebTestCase
 
         $this->client->followRedirect();
 
-        $this->assertSelectorTextContains('div.alert-success', "L'utilisateur a bien été ajouté.
-        ");  
+        $this->assertSelectorTextContains('div.alert-success', "L'utilisateur a bien été ajouté.");  
+    }
+
+    public function testEditUser(){
+        $userAdmin = $this->userRepository->findOneBy(["username" => "admin"]);
+
+        $this->client->loginUser($userAdmin);
+
+        $user = $this->userRepository->findOneBy(["username" => "user3"]);
+        
+        $url = $this->urlGenerator->generate("user_edit", ["id" => $user->getId()]);
+
+        $crawler = $this->client->request(Request::METHOD_GET, $url);
+
+        $form = $crawler->selectButton("Modifier")->form([
+            'user[username]' => 'user3 modifié',
+            'user[password][first]' => '12345',
+            'user[password][second]' => '12345',
+            'user[email]' => 'user3modifie@gmail.com',
+            'user[roles]' => 'ROLE_USER'
+        ]);
+
+        $this->client->submit($form);
+
+        $this->client->followRedirect();
+
+        $this->assertSelectorTextContains('div.alert-success', "L'utilisateur a bien été modifié");  
     }
 
 }
