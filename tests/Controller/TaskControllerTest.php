@@ -3,7 +3,9 @@
 namespace App\tests\Controller;
 
 use App\Entity\Task;
+use App\Entity\User;
 use App\Repository\TaskRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -14,12 +16,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class TaskControllerTest extends WebTestCase
 {
-
     private KernelBrowser $client;
     private ContainerInterface $container;
     private EntityManagerInterface $entityManager;
     private TaskRepository $taskRepository;
     private UrlGeneratorInterface $urlGenerator;
+    private UserRepository $userRepository;
 
     public function setUp():void{
         $this->client = static::createClient();
@@ -29,6 +31,8 @@ class TaskControllerTest extends WebTestCase
         $this->entityManager = $this->container->get(EntityManagerInterface::class);
 
         $this->taskRepository = $this->entityManager->getRepository(Task::class);
+
+        $this->userRepository = $this->entityManager->getRepository(User::class);
 
         $this->urlGenerator = $this->container->get(UrlGeneratorInterface::class);
     }
@@ -52,8 +56,8 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
 
         $form = $crawler->selectButton('Ajouter')->form([
-            'task[title]' => 'nouveau titre 3',
-            'task[content]' => 'nouveau contenu 3'
+            'task[title]' => 'nouveau titre',
+            'task[content]' => 'nouveau contenu'
         ]);
 
         $this->client->submit($form);
@@ -63,7 +67,7 @@ class TaskControllerTest extends WebTestCase
     }
 
     public function testEditTask(){
-        $task = $this->taskRepository->findOneBy(["id" => 1]);
+        $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
         
         $crawler = $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_edit", ["id" => $task->getId()]));
         $this->assertResponseIsSuccessful();
@@ -81,7 +85,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testToggleTask(){
         /** @var Task */
-        $task = $this->taskRepository->findOneBy(["id" => 1]);
+        $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
 
         $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_toggle", ["id" => $task->getId()]));
 
@@ -90,5 +94,17 @@ class TaskControllerTest extends WebTestCase
         $this->client->followRedirect();
 
         $this->assertSelectorTextContains('div.alert-success', "Superbe ! La tâche {$task->getTitle()} a bien été marquée comme faite.");
+    }
+
+    public function testDeleteTask(){
+        $user = $this->userRepository->find(1);
+
+        $this->client->loginUser($user);
+
+        $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
+
+        $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
 }

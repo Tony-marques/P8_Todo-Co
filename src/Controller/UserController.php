@@ -33,8 +33,6 @@ class UserController extends AbstractController
             $password = $hasher->hashPassword($user, $user->getPassword());
             $user->setPassword($password);
 
-            dd($user);
-
             $em->persist($user);
             $em->flush();
 
