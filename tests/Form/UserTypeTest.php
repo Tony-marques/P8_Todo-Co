@@ -23,17 +23,20 @@ class UserTypeTest extends TypeTestCase
             ];
             
             $user = new User();
+            $user->setEmail($formData["email"])
+            ->setPassword($formData["password"]["first"])
+            ->setRoles($formData["roles"])
+            ->setUsername($formData["username"]);
+
+            $userInForm = new User();
             
-            $form = $this->factory->create(UserType::class, $user);
+            $form = $this->factory->create(UserType::class, $userInForm);
             $form->submit($formData);
 
-            // dd($user->getRoles());
-            // dd($form->get("roles")->getData());
-    
             $this->assertTrue($form->isSynchronized());
-            $this->assertEquals($user->getUsername(), $form->get("username")->getData());
-            $this->assertEquals($user->getPassword(), $form->get("password")->getData());
-            $this->assertEquals($user->getEmail(), $form->get("email")->getData());
-            $this->assertEquals($user->getRoles(), $form->get("roles")->getData());
+            $this->assertEquals($user->getUsername(), $userInForm->getUsername());
+            $this->assertEquals($user->getPassword(), $userInForm->getPassword());
+            $this->assertEquals($user->getEmail(), $userInForm->getEmail());
+            $this->assertEquals($user->getRoles(),$userInForm->getRoles());
     }
 }
