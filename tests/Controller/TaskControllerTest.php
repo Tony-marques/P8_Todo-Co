@@ -66,8 +66,8 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorTextContains('div.alert-success', "Superbe ! La tâche a été bien été ajoutée.");                
     }
 
-    public function testCreateTaskByAuthenticatedUser(){
-        $user = $this->userRepository->findOneBy(["username" => "toto"]);
+    public function testCreateTaskByAuthenticatedUserWithRoleUser(){
+        $user = $this->userRepository->findOneBy(["username" => "tata"]);
 
         $this->client->loginUser($user);
 
@@ -84,6 +84,7 @@ class TaskControllerTest extends WebTestCase
         $this->client->followRedirect();
         $this->assertSelectorTextContains('div.alert-success', "Superbe ! La tâche a été bien été ajoutée.");                
     }
+
 
     public function testEditTask(){
         $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
@@ -115,10 +116,37 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorTextContains('div.alert-success', "Superbe ! La tâche {$task->getTitle()} a bien été marquée comme faite.");
     }
 
-    public function testDeleteTask(){
-        $user = $this->userRepository->find(1);
+
+
+    public function testDeleteTaskBelongsToAnonymeByRoleUser(){
+        $userWithRoleUser = $this->userRepository->find(2);
+
+        $this->client->loginUser($userWithRoleUser);
+
+        $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
+
+        $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testDeleteTaskBelongsToUserWithRoleUser(){
+        $user = $this->userRepository->find(2);
 
         $this->client->loginUser($user);
+
+        $task = $this->taskRepository->findOneBy(["title" => "nouveau titre authentifié"]);
+
+        $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+    }
+
+
+    public function testDeleteTaskBelongsToAnonymeByRoleAdmin(){
+        $userWithRoleAdmin = $this->userRepository->find(1);
+
+        $this->client->loginUser($userWithRoleAdmin);
 
         $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
 
