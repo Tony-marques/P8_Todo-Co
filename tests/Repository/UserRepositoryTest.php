@@ -10,8 +10,8 @@ class UserRepositoryTest extends KernelTestCase
   public function testGetUser(){
     $userRepository = static::getContainer()->get(UserRepository::class);
     
-    $user = $userRepository->find(['id' => 1]);
+    $user = $userRepository->findOneBy(['username' => 'admin']);
 
-    $this->assertSame(1, $user->getId());
+    $this->assertSame("admin", $user->getUsername());
   }
 }
