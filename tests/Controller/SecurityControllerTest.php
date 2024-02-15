@@ -30,8 +30,23 @@ class SecurityControllerTest extends WebTestCase
         $this->client->followRedirect();
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
 
-
         $this->assertSelectorTextContains('h1', "Bienvenue sur Todo List, l'application vous permettant de gérer l'ensemble de vos tâches sans effort !");
+    }
 
+    public function testFailureLogin() {
+        $crawler = $this->client->request(Request::METHOD_GET, "/login");
+
+        $form = $crawler->selectButton("Se connecter")->form([
+            "_username" => "admin",
+            "_password" => "123456"
+        ]);
+
+        $this->client->submit($form);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+        $this->client->followRedirect();
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+
+        $this->assertSelectorTextContains('div.alert-danger', "Invalid credentials.");
     }
 }
