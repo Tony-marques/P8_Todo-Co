@@ -49,4 +49,12 @@ class SecurityControllerTest extends WebTestCase
 
         $this->assertSelectorTextContains('div.alert-danger', "Invalid credentials.");
     }
+
+    public function testLogout(){
+        $this->client->request(Request::METHOD_GET, "/logout");
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+        $this->client->followRedirect();
+        $this->assertResponseStatusCodeSame(Response::HTTP_OK);
+    }
 }
