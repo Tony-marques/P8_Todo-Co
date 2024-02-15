@@ -5,7 +5,6 @@ namespace App\tests\Form;
 use App\Entity\User;
 use App\Form\UserType;
 use Symfony\Component\Form\Test\TypeTestCase;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserTypeTest extends TypeTestCase
 {
@@ -14,10 +13,10 @@ class UserTypeTest extends TypeTestCase
         {
             $formData = [
                 'username' => 'Exemple de username',
-                'password' => array(
+                'password' => [
                     'first' => '1234',
                     'second' => '1234',
-                ),
+                ],
                 'email'=> 'Exemple d\'email',
                 'roles' => array('ROLE_USER'),
             ];
