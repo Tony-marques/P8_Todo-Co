@@ -66,6 +66,25 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorTextContains('div.alert-success', "Superbe ! La tâche a été bien été ajoutée.");                
     }
 
+    public function testCreateTaskByAuthenticatedUser(){
+        $user = $this->userRepository->findOneBy(["username" => "toto"]);
+
+        $this->client->loginUser($user);
+
+        $crawler = $this->client->request(Request::METHOD_GET, '/tasks/create');
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->selectButton('Ajouter')->form([
+            'task[title]' => 'nouveau titre authentifié',
+            'task[content]' => 'nouveau contenu authentifié'
+        ]);
+
+        $this->client->submit($form);
+
+        $this->client->followRedirect();
+        $this->assertSelectorTextContains('div.alert-success', "Superbe ! La tâche a été bien été ajoutée.");                
+    }
+
     public function testEditTask(){
         $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
         
