@@ -11,7 +11,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-class TaskController extends AbstractController
+    class TaskController extends AbstractController
 {
     #[Route(path: "/tasks", name: "task_list")]
     public function listAction(TaskRepository $taskRepository)
@@ -76,7 +76,7 @@ class TaskController extends AbstractController
     public function deleteTaskAction(Task $task, EntityManagerInterface $em)
     {
         $this->denyAccessUnlessGranted("TASK_DELETE", $task);
-        
+
         $em->remove($task);
         $em->flush();
 

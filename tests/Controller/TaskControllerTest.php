@@ -23,7 +23,8 @@ class TaskControllerTest extends WebTestCase
     private UrlGeneratorInterface $urlGenerator;
     private UserRepository $userRepository;
 
-    public function setUp():void{
+    public function setUp():void
+    {
         $this->client = static::createClient();
 
         $this->container = static::getContainer();
@@ -151,15 +152,12 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
 
-    // public function testDeleteTaskBelongsToAdminByRoleAdmin(){
-    //     $userWithRoleAdmin = $this->userRepository->findOneBy(["username" => "admin"]);
+    public function testDeleteWithAnonymeUser(){
+        $task = $this->taskRepository->findOneBy(["title" => "testGetTask22"]);
 
-    //     $this->client->loginUser($userWithRoleAdmin);
+        $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
 
-    //     $task = $this->taskRepository->findOneBy(["title" => "Titre modifié"]);
-
-    //     $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
-
-    //     $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
-    // }
+        $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
+        $this->assertResponseRedirects("/login");
+    }
 }
