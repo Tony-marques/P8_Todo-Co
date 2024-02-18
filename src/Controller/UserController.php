@@ -8,6 +8,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -16,13 +17,13 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class UserController extends AbstractController
 {
     #[Route(path: "/users", name: "user_list")]
-    public function listAction(UserRepository $userRepository)
+    public function listAction(UserRepository $userRepository): Response
     {
         return $this->render('user/list.html.twig', ['users' => $userRepository->findAll()]);
     }
 
     #[Route(path: "/users/create", name: "user_create")]
-    public function createAction(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher)
+    public function createAction(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $hasher): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
@@ -45,7 +46,11 @@ class UserController extends AbstractController
     }
 
     #[Route(path: "/users/{id}/edit", name: "user_edit")]
-    public function editAction(User $user, Request $request, UserPasswordHasherInterface $hasher, EntityManagerInterface $em)
+    public function editAction(
+        User                   $user,
+        Request                $request, UserPasswordHasherInterface $hasher,
+        EntityManagerInterface $em
+    ): Response
     {
         $form = $this->createForm(UserType::class, $user);
 

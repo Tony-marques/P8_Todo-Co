@@ -9,18 +9,19 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-    class TaskController extends AbstractController
+class TaskController extends AbstractController
 {
     #[Route(path: "/tasks", name: "task_list")]
-    public function listAction(TaskRepository $taskRepository)
+    public function listAction(TaskRepository $taskRepository): Response
     {
         return $this->render('task/list.html.twig', ['tasks' => $taskRepository->findAll()]);
     }
 
     #[Route(path: "/tasks/create", name: "task_create")]
-    public function createAction(Request $request, EntityManagerInterface $em, Security $security)
+    public function createAction(Request $request, EntityManagerInterface $em, Security $security): Response
     {
         $task = new Task();
         $form = $this->createForm(TaskType::class, $task, ["validation_groups" => ["user:create"]]);
@@ -41,7 +42,7 @@ use Symfony\Component\Routing\Attribute\Route;
     }
 
     #[Route(path: "/tasks/{id}/edit", name: "task_edit")]
-    public function editAction(Task $task, Request $request, EntityManagerInterface $em)
+    public function editAction(Task $task, Request $request, EntityManagerInterface $em): Response
     {
         $form = $this->createForm(TaskType::class, $task, ["validation_groups" => ["user:create"]]);
 
@@ -62,7 +63,7 @@ use Symfony\Component\Routing\Attribute\Route;
     }
 
     #[Route(path: "/tasks/{id}/toggle", name: "task_toggle")]
-    public function toggleTaskAction(Task $task, EntityManagerInterface $em)
+    public function toggleTaskAction(Task $task, EntityManagerInterface $em): Response
     {
         $task->toggle(!$task->isDone());
         $em->flush();
@@ -73,7 +74,7 @@ use Symfony\Component\Routing\Attribute\Route;
     }
 
     #[Route(path: "/tasks/{id}/delete", name: "task_delete")]
-    public function deleteTaskAction(Task $task, EntityManagerInterface $em)
+    public function deleteTaskAction(Task $task, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted("TASK_DELETE", $task);
 
