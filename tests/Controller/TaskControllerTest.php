@@ -23,7 +23,7 @@ class TaskControllerTest extends WebTestCase
     private UrlGeneratorInterface $urlGenerator;
     private UserRepository $userRepository;
 
-    public function setUp():void
+    public function setUp(): void
     {
         $this->client = static::createClient();
 
@@ -44,7 +44,7 @@ class TaskControllerTest extends WebTestCase
 
         $tasks = $this->taskRepository->findAll();
 
-        foreach($tasks as $task){
+        foreach ($tasks as $task) {
             $this->assertInstanceOf(Task::class, $task);
         }
 
@@ -52,7 +52,8 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
-    public function testCreateTask(){
+    public function testCreateTask()
+    {
         $crawler = $this->client->request(Request::METHOD_GET, '/tasks/create');
         $this->assertResponseIsSuccessful();
 
@@ -64,10 +65,11 @@ class TaskControllerTest extends WebTestCase
         $this->client->submit($form);
 
         $this->client->followRedirect();
-        $this->assertSelectorTextContains('div.alert-success', "La tâche a été bien été ajoutée.");                
+        $this->assertSelectorTextContains('div.alert-success', "La tâche a été bien été ajoutée.");
     }
 
-    public function testCreateTaskByAuthenticatedUserWithRoleUser(){
+    public function testCreateTaskByAuthenticatedUserWithRoleUser()
+    {
         $user = $this->userRepository->findOneBy(["username" => "user1"]);
 
         $this->client->loginUser($user);
@@ -83,12 +85,13 @@ class TaskControllerTest extends WebTestCase
         $this->client->submit($form);
 
         $this->client->followRedirect();
-        $this->assertSelectorTextContains('div.alert-success', "La tâche a été bien été ajoutée.");                
+        $this->assertSelectorTextContains('div.alert-success', "La tâche a été bien été ajoutée.");
     }
 
-    public function testEditTask(){
+    public function testEditTask()
+    {
         $task = $this->taskRepository->findOneBy(["title" => "nouveau titre authentifié"]);
-        
+
         $crawler = $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_edit", ["id" => $task->getId()]));
         $this->assertResponseIsSuccessful();
 
@@ -103,7 +106,8 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorTextContains('div.alert-success', "La tâche a bien été modifiée.");
     }
 
-    public function testToggleTask(){
+    public function testToggleTask()
+    {
         /** @var Task */
         $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
 
@@ -116,7 +120,8 @@ class TaskControllerTest extends WebTestCase
         $this->assertSelectorTextContains('div.alert-success', "La tâche {$task->getTitle()} a bien été marquée comme faite.");
     }
 
-    public function testDeleteTaskBelongsToAnonymeByRoleUser(){
+    public function testDeleteTaskBelongsToAnonymeByRoleUser()
+    {
         $userWithRoleUser = $this->userRepository->findOneBy(["username" => "user1"]);
 
         $this->client->loginUser($userWithRoleUser);
@@ -128,7 +133,8 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
-    public function testDeleteTaskBelongsToUserWithRoleUser(){
+    public function testDeleteTaskBelongsToUserWithRoleUser()
+    {
         $userWithRoleUser = $this->userRepository->findOneBy(["username" => "user1"]);
 
         $this->client->loginUser($userWithRoleUser);
@@ -140,7 +146,8 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
 
-    public function testDeleteTaskBelongsToAnonymeByRoleAdmin(){
+    public function testDeleteTaskBelongsToAnonymeByRoleAdmin()
+    {
         $userWithRoleAdmin = $this->userRepository->findOneBy(["username" => "admin"]);
 
         $this->client->loginUser($userWithRoleAdmin);
@@ -152,7 +159,8 @@ class TaskControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
 
-    public function testDeleteWithAnonymeUser(){
+    public function testDeleteWithAnonymeUser()
+    {
         $task = $this->taskRepository->findOneBy(["title" => "testGetTask22"]);
 
         $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
