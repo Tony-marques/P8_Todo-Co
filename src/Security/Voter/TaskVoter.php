@@ -35,8 +35,9 @@ class TaskVoter extends Voter
                 }
                 return $subject->getUser() === $user;
                 break;
+            default: {
+                return false;
+            }
         }
-
-        return false;
     }
 }
