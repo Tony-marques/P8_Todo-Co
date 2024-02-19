@@ -1,0 +1,15 @@
+{
+  "lang": "fr-FR",
+
+  "name": "Todo & Co",
+
+  "short_name": "Todo&Co",
+
+  "description": "Todo & Co est une application web centrée sur la gestion de tâche",
+
+  "start_url": "https://localhost:8000/",
+
+  "orientation": "landscape",
+
+  "display": "fullscreen"
+}
