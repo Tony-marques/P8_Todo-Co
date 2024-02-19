@@ -28,7 +28,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $username = null;
 
     #[ORM\Column(length: 64)]
-    private ?string $password= null;
+    private ?string $password = null;
 
     #[ORM\Column(length: 60, unique: true)]
     #[Assert\NotBlank(message: "Vous devez saisir une adresse email.", groups: ["user:create", "user:edit"])]
@@ -46,7 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->tasks = new ArrayCollection();
     }
 
-    public function getId() :int
+    public function getId(): int
     {
         return $this->id;
     }
@@ -57,7 +57,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getUsername() :string
+    public function getUsername(): string
     {
         return $this->username;
     }
@@ -68,23 +68,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSalt()
+    public function getSalt(): null
     {
         return null;
     }
 
-    public function getPassword():string
+    public function getPassword(): string
     {
         return $this->password;
     }
 
-    public function setPassword(string $password):self
+    public function setPassword(string $password): self
     {
         $this->password = $password;
         return $this;
     }
 
-    public function getEmail():string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -117,7 +117,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string)$this->email;
     }
 
     /**
