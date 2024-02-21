@@ -6,9 +6,6 @@
 	{% endif %}
 
 	<form action="{{ path('login') }}" method="post">
-		{% if error %}
-			<div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-		{% endif %}
 		<label for="username">Nom d'utilisateur :</label>
 		<input type="text" id="username" name="_username" value="{{ last_username }}"/>
 
