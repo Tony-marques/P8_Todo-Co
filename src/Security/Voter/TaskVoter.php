@@ -31,7 +31,6 @@ class TaskVoter extends Voter
             case self::DELETE:
                 if($subject->getUser() === null && \in_array("ROLE_ADMIN", $user->getRoles())) {
                     return true;
-                    break;
                 }
                 return $subject->getUser() === $user;
                 break;

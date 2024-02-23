@@ -1,12 +1,14 @@
 <?php
 
-namespace App\tests\Controller;
+namespace App\Tests\Controller;
 
+use App\DataFixtures\AppFixtures;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -36,6 +38,17 @@ class TaskControllerTest extends WebTestCase
         $this->userRepository = $this->entityManager->getRepository(User::class);
 
         $this->urlGenerator = $this->container->get(UrlGeneratorInterface::class);
+
+        $this->loadFixtures();
+    }
+
+    private function loadFixtures(): void
+    {
+        $databaseTool = static::getContainer()->get(DatabaseToolCollection::class)->get();
+
+        $databaseTool->loadFixtures([
+            AppFixtures::class
+        ]);
     }
 
     public function testTaskListPage()
@@ -90,7 +103,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testEditTask()
     {
-        $task = $this->taskRepository->findOneBy(["title" => "nouveau titre authentifié"]);
+        $task = $this->taskRepository->findOneBy(["title" => "testGetTask"]);
 
         $crawler = $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_edit", ["id" => $task->getId()]));
         $this->assertResponseIsSuccessful();
@@ -109,7 +122,7 @@ class TaskControllerTest extends WebTestCase
     public function testToggleTask()
     {
         /** @var Task */
-        $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
+        $task = $this->taskRepository->findOneBy(["title" => "testGetTask"]);
 
         $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_toggle", ["id" => $task->getId()]));
 
@@ -126,7 +139,7 @@ class TaskControllerTest extends WebTestCase
 
         $this->client->loginUser($userWithRoleUser);
 
-        $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
+        $task = $this->taskRepository->findOneBy(["title" => "testGetTask"]);
 
         $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
 
@@ -139,7 +152,7 @@ class TaskControllerTest extends WebTestCase
 
         $this->client->loginUser($userWithRoleUser);
 
-        $task = $this->taskRepository->findOneBy(["title" => "Titre modifié"]);
+        $task = $this->taskRepository->findOneBy(["title" => "testGetTask22"]);
 
         $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
 
@@ -152,7 +165,7 @@ class TaskControllerTest extends WebTestCase
 
         $this->client->loginUser($userWithRoleAdmin);
 
-        $task = $this->taskRepository->findOneBy(["title" => "nouveau titre"]);
+        $task = $this->taskRepository->findOneBy(["title" => "anonymeTask"]);
 
         $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
 
@@ -161,7 +174,7 @@ class TaskControllerTest extends WebTestCase
 
     public function testDeleteWithAnonymeUser()
     {
-        $task = $this->taskRepository->findOneBy(["title" => "testGetTask22"]);
+        $task = $this->taskRepository->findOneBy(["title" => "anonymeTask"]);
 
         $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
 

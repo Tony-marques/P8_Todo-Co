@@ -1,12 +1,14 @@
 <?php
 
-namespace App\tests\Controller;
+namespace App\Tests\Controller;
 
+use App\DataFixtures\AppFixtures;
 use App\Entity\Task;
 use App\Entity\User;
 use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -23,7 +25,8 @@ class UserControllerTest extends WebTestCase
     private UrlGeneratorInterface $urlGenerator;
     private UserRepository $userRepository;
 
-    public function setUp():void{
+    public function setUp(): void
+    {
         $this->client = static::createClient();
 
         $this->container = static::getContainer();
@@ -35,10 +38,22 @@ class UserControllerTest extends WebTestCase
         $this->userRepository = $this->entityManager->getRepository(User::class);
 
         $this->urlGenerator = $this->container->get(UrlGeneratorInterface::class);
+
+        $this->loadFixtures();
     }
 
-    
-    public function testUserListPageWithRoleAdmin(){
+    private function loadFixtures(): void
+    {
+        $databaseTool = static::getContainer()->get(DatabaseToolCollection::class)->get();
+
+        $databaseTool->loadFixtures([
+            AppFixtures::class
+        ]);
+    }
+
+
+    public function testUserListPageWithRoleAdmin()
+    {
         $user = $this->userRepository->findOneBy(["username" => "admin"]);
 
         $this->client->loginUser($user);
@@ -49,7 +64,8 @@ class UserControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
-    public function testCreateUser(){
+    public function testCreateUser()
+    {
         $userAdmin = $this->userRepository->findOneBy(["username" => "admin"]);
 
         $this->client->loginUser($userAdmin);
@@ -68,16 +84,17 @@ class UserControllerTest extends WebTestCase
 
         $this->client->followRedirect();
 
-        $this->assertSelectorTextContains('div.alert-success', "L'utilisateur a bien été ajouté.");  
+        $this->assertSelectorTextContains('div.alert-success', "L'utilisateur a bien été ajouté.");
     }
 
-    public function testEditUser(){
+    public function testEditUser()
+    {
         $userAdmin = $this->userRepository->findOneBy(["username" => "admin"]);
 
         $this->client->loginUser($userAdmin);
 
-        $user = $this->userRepository->findOneBy(["username" => "user3"]);
-        
+        $user = $this->userRepository->findOneBy(["username" => "user1"]);
+
         $url = $this->urlGenerator->generate("user_edit", ["id" => $user->getId()]);
 
         $crawler = $this->client->request(Request::METHOD_GET, $url);
@@ -94,7 +111,7 @@ class UserControllerTest extends WebTestCase
 
         $this->client->followRedirect();
 
-        $this->assertSelectorTextContains('div.alert-success', "L'utilisateur a bien été modifié");  
+        $this->assertSelectorTextContains('div.alert-success', "L'utilisateur a bien été modifié");
     }
 
 }

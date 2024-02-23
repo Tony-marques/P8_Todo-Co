@@ -1,6 +1,6 @@
 <?php
 
-namespace App\tests\Form;
+namespace App\Tests\Form;
 
 use App\Entity\Task;
 use App\Form\TaskType;
