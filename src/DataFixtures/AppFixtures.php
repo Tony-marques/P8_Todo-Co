@@ -34,17 +34,25 @@ class AppFixtures extends Fixture
         $task = new Task();
         $task->setTitle("testGetTask")
             ->setContent("test")
+            ->setUser($user)
             ->toggle(0);
 
         $task2 = new Task();
         $task2->setTitle("testGetTask22")
             ->setContent("test22")
+            ->setUser($user1)
+            ->toggle(0);
+
+        $taskWithAnonymeUser = new Task();
+        $taskWithAnonymeUser->setTitle("anonymeTask")
+            ->setContent("content anonymeTask")
             ->toggle(0);
 
         $manager->persist($user);
         $manager->persist($user1);
         $manager->persist($task);
         $manager->persist($task2);
+        $manager->persist($taskWithAnonymeUser);
         $manager->flush();
     }
 }
