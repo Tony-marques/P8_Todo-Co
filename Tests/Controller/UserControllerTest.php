@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Repository\TaskRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\NotSupported;
 use Liip\TestFixturesBundle\Services\DatabaseToolCollection;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -51,7 +52,6 @@ class UserControllerTest extends WebTestCase
         ]);
     }
 
-
     public function testUserListPageWithRoleAdmin()
     {
         $user = $this->userRepository->findOneBy(["username" => "admin"]);
@@ -64,6 +64,9 @@ class UserControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_OK);
     }
 
+    /**
+     * @throws NotSupported
+     */
     public function testCreateUser()
     {
         $userAdmin = $this->userRepository->findOneBy(["username" => "admin"]);
@@ -77,12 +80,15 @@ class UserControllerTest extends WebTestCase
             'user[password][first]' => '12345',
             'user[password][second]' => '12345',
             'user[email]' => 'user3@gmail.com',
-            'user[roles]' => 'ROLE_USER'
+            'user[roles]' => 'ROLE_ADMIN'
         ]);
 
         $this->client->submit($form);
 
         $this->client->followRedirect();
+
+        $userCreated = $this->userRepository->findUserByUsernameAndRole("user3", 'ROLE_ADMIN');
+        $this->assertContains('ROLE_ADMIN', $userCreated[0]->getRoles());
 
         $this->assertSelectorTextContains('div.alert-success', "L'utilisateur a bien été ajouté.");
     }

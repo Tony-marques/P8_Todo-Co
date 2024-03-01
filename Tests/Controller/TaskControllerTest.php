@@ -97,6 +97,9 @@ class TaskControllerTest extends WebTestCase
 
         $this->client->submit($form);
 
+        $task = $this->taskRepository->findOneBy(["title" => "nouveau titre authentifié"]);
+        $this->assertNotNull($task->getUser());
+
         $this->client->followRedirect();
         $this->assertSelectorTextContains('div.alert-success', "La tâche a été bien été ajoutée.");
     }
@@ -156,6 +159,7 @@ class TaskControllerTest extends WebTestCase
 
         $this->client->request(Request::METHOD_GET, $this->urlGenerator->generate("task_delete", ["id" => $task->getId()]));
 
+        $this->assertEquals($userWithRoleUser->getId(), $task->getUser()->getId());
         $this->assertResponseStatusCodeSame(Response::HTTP_FOUND);
     }
 
