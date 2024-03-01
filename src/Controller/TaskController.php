@@ -56,10 +56,12 @@ class TaskController extends AbstractController
             return $this->redirectToRoute('task_list');
         }
 
-        return $this->render('task/edit.html.twig', [
-            'form' => $form->createView(),
-            'task' => $task,
-        ]);
+        return $this->render(
+            'task/edit.html.twig', [
+                'form' => $form->createView(),
+                'task' => $task,
+            ]
+        );
     }
 
     #[Route(path: "/tasks/{id}/toggle", name: "task_toggle")]
